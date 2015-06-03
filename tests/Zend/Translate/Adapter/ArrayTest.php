@@ -332,6 +332,58 @@ class Zend_Translate_Adapter_ArrayTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Issue #130
+     * @link https://github.com/zendframework/zf1/issues/130
+     * @backupGlobals enabled
+     * @backupStaticAttributes enabled
+     */
+    public function testConstructorAutoLocale()
+    {
+        $reflector = new ReflectionProperty('Zend_Locale', '_browser');
+        $reflector->setAccessible(true);
+        $reflector->setValue(null);
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja_JP;q=1.0';
+
+        $adapter = new Zend_Translate_Adapter_Array(
+            array(
+                'disableNotices' => true,
+                'content' => dirname(__FILE__) . '/_files/testarray',
+                'scan' => Zend_Translate::LOCALE_DIRECTORY
+            )
+        );
+        $this->assertEquals('ja', $adapter->getLocale());
+        $this->assertEquals('Message 1 (ja)', $adapter->translate('Message 1'));
+    }
+
+    /**
+     * Issue #130
+     * @link https://github.com/zendframework/zf1/issues/130
+     * @backupGlobals enabled
+     * @backupStaticAttributes enabled
+     */
+    public function testAddTranslationAutoLocale()
+    {
+        $reflector = new ReflectionProperty('Zend_Locale', '_browser');
+        $reflector->setAccessible(true);
+        $reflector->setValue(null);
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja_JP;q=1.0';
+
+        $adapter = new Zend_Translate_Adapter_Array(
+            array(
+                'disableNotices' => true
+            )
+        );
+        $adapter->addTranslation(
+            array(
+                'content' => dirname(__FILE__) . '/_files/testarray',
+                'scan'    => Zend_Translate::LOCALE_DIRECTORY
+            )
+        );
+        $this->assertEquals('ja', $adapter->getLocale());
+        $this->assertEquals('Message 2 (ja)', $adapter->translate('Message 2'));
+    }
+
+    /**
      * Ignores a raised PHP error when in effect, but throws a flag to indicate an error occurred
      *
      * @param  integer $errno
