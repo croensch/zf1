@@ -178,7 +178,7 @@ abstract class Zend_Translate_Adapter {
             $this->addTranslation($options);
         }
 
-        if ($this->getLocale() !== (string) $options['locale']) {
+        if ($this->getLocale() === 'auto' && 'auto' !== (string) $options['locale']) {
             $this->setLocale($options['locale']);
         }
     }
